@@ -1,7 +1,7 @@
 #!/bin/bash
 
-startDate=$(date -jf "%d-%m-%Y" "04-09-2023" "+%s")
-endDate=$(date -jf "%d-%m-%Y" "15-07-2024" "+%s")
+startDate=$(date -jf "%d-%m-%Y" "02-09-2024" "+%s")
+endDate=$(date -jf "%d-%m-%Y" "14-07-2025" "+%s")
 
 folders=("Aangepaste examinering" "Extra herkansing" "Hoger niveau" "Vrijstelling")
 
