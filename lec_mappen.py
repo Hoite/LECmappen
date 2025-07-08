@@ -12,7 +12,8 @@ import argparse
 import sys
 
 # Configuratie
-CONFIG_FILE = "config.json"
+SCRIPT_DIR = Path(__file__).parent
+CONFIG_FILE = SCRIPT_DIR / "config.json"
 
 # Standaard configuratie
 DEFAULT_CONFIG = {
@@ -22,10 +23,10 @@ DEFAULT_CONFIG = {
     "school_year_end_day": 31,
     "meeting_day": 0,              # Maandag (0=Maandag, 6=Zondag)
     "folder_types": {
-        "basic": [],
-        "aanvragenstudenten": ["Aangepaste examinering", "Extra herkansing", "Hoger niveau", "Vrijstelling"],
-        "diplomabesluiten": ["Certificaten", "Diploma's", "Mbo-verklaringen"],
-        "vaststellingen": ["Diplomaplan keuzedelen", "Diplomaplan kwalificaties", "Exameninstrumenten", "Resultaten"]
+        "LEC Vergaderingen": [],
+        "Aanvragen Studenten": ["Aangepaste examinering", "Extra herkansing", "Hoger niveau", "Vrijstelling"],
+        "Diplomabesluiten": ["Certificaten", "Diploma's", "Mbo-verklaringen"],
+        "Vaststellingen": ["Diplomaplan keuzedelen", "Diplomaplan kwalificaties", "Exameninstrumenten", "Resultaten"]
     }
 }
 
@@ -229,7 +230,7 @@ def main():
     # Command line modus
     config = load_config()
     year = args.year or datetime.now().year
-    folder_type = args.type or "basic"
+    folder_type = args.type or list(config["folder_types"].keys())[0]  # Gebruik eerste beschikbare type
     
     start_date, end_date = get_school_year(year)
     mondays = get_mondays_in_range(start_date, end_date)

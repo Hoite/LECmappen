@@ -5,19 +5,19 @@
   "school_year_end_day": 31,
   "meeting_day": 0,
   "folder_types": {
-    "basic": [],
-    "aanvragenstudenten": [
+    "LEC Vergaderingen": [],
+    "Aanvragen Studenten": [
       "Aangepaste examinering",
       "Extra herkansing",
       "Hoger niveau",
       "Vrijstelling"
     ],
-    "diplomabesluiten": [
+    "Diplomabesluiten": [
       "Certificaten",
       "Diploma's",
       "Mbo-verklaringen"
     ],
-    "vaststellingen": [
+    "Vaststellingen": [
       "Diplomaplan keuzedelen",
       "Diplomaplan kwalificaties",
       "Exameninstrumenten",
