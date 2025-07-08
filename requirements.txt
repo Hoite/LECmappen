@@ -1,0 +1,14 @@
+# LEC Mappen Generator Requirements
+# Dit script gebruikt alleen Python's standaard bibliotheek
+# Geen externe packages vereist
+
+# Minimale Python versie: 3.6+
+# Werkt met Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12+
+
+# Gebruikte standaard modules:
+# - os: Bestandssysteem operaties
+# - json: JSON configuratie bestanden
+# - datetime: Datum/tijd berekeningen
+# - pathlib: Moderne pad manipulatie
+# - argparse: Command line argument parsing
+# - sys: Systeem specifieke functies
