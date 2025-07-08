@@ -2,6 +2,9 @@
 """
 LEC Mappen Generator
 Automatische aanmaak van mappenstructuur voor de examencommissie van Alfa-college
+
+Copyright (c) 2025 Hoite Prins
+Licensed under the MIT License - see LICENSE file for details
 """
 
 import os
