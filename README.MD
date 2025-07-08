@@ -69,8 +69,9 @@ Het programma gebruikt de standaard schooljaar notatie:
 
 ## Configuratie
 
-Het bestand `config.json` bevat alle instellingen:
+Het bestand `config.json` bevat alle instellingen en je kunt dit eenvoudig aanpassen:
 
+### Handmatig bewerken:
 ```json
 {
   "school_year_start_month": 9,     // September
@@ -80,11 +81,51 @@ Het bestand `config.json` bevat alle instellingen:
   "meeting_day": 0,                 // 0=Maandag, 1=Dinsdag, etc.
   "folder_types": {
     "basic": [],                    // Alleen hoofdmappen
-    "aanvragenstudenten": [...],    // Met submappen
+    "aanvragenstudenten": [         // Met submappen
+      "Aangepaste examinering",
+      "Extra herkansing",
+      "Hoger niveau", 
+      "Vrijstelling"
+    ],
     "diplomabesluiten": [...],      // Met submappen
     "vaststellingen": [...]         // Met submappen
   }
 }
+```
+
+### Interactieve configuratie editor:
+```bash
+# Start de configuratie editor
+python3 lec_mappen.py --edit-config
+```
+
+**Met de configuratie editor kun je:**
+- ✅ Schooljaar datums aanpassen
+- ✅ Submappen per categorie toevoegen/wijzigen/verwijderen
+- ✅ Nieuwe mapstructuren maken
+- ✅ Bestaande mapstructuren verwijderen
+- ✅ Alles opslaan zonder handmatig JSON te bewerken
+
+### Submappen aanpassen:
+
+**Nieuwe submap toevoegen:**
+- Voeg toe aan de lijst in `config.json`
+- Of gebruik `--edit-config` voor gebruiksvriendelijke interface
+
+**Nieuwe mapstructuur maken:**
+```json
+"folder_types": {
+  "examens": [
+    "Theoretische examens",
+    "Praktische examens",
+    "Herexamens"
+  ]
+}
+```
+
+**Bestaande submappen wijzigen:**
+- Pas de namen aan in `config.json`  
+- Of gebruik de interactieve editor
 ```
 
 ## Beschikbare maptypes

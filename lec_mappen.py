@@ -198,11 +198,16 @@ def interactive_mode():
 
 def main():
     """Hoofdfunctie"""
+    # Laad configuratie voor dynamische choices
+    config = load_config()
+    available_types = list(config["folder_types"].keys())
+    
     parser = argparse.ArgumentParser(description="LEC Mappen Generator")
     parser.add_argument("--year", type=int, help="Startjaar van het schooljaar (bijv. 2024 voor schooljaar 2024/2025)")
-    parser.add_argument("--type", choices=["basic", "aanvragenstudenten", "diplomabesluiten", "vaststellingen"], 
+    parser.add_argument("--type", choices=available_types, 
                        help="Type mapstructuur")
     parser.add_argument("--config", action="store_true", help="Configuratie bestand aanmaken/bewerken")
+    parser.add_argument("--edit-config", action="store_true", help="Interactieve configuratie editor")
     parser.add_argument("--interactive", "-i", action="store_true", help="Interactieve modus (aanbevolen)")
     
     args = parser.parse_args()
@@ -211,6 +216,10 @@ def main():
         config = load_config()
         save_config(config)
         print(f"Configuratie opgeslagen in {CONFIG_FILE}")
+        return
+    
+    if args.edit_config:
+        edit_config_interactive()
         return
     
     if args.interactive or (not args.year and not args.type):
@@ -234,6 +243,182 @@ def main():
             success_count += 1
     
     print(f"✓ {success_count}/{len(mondays)} mappen aangemaakt.")
+
+def edit_config_interactive():
+    """Interactieve configuratie editor"""
+    config = load_config()
+    
+    print("=== Configuratie Editor ===")
+    print()
+    
+    while True:
+        print("Wat wil je bewerken?")
+        print("1. Schooljaar datums")
+        print("2. Mapstructuren (submappen)")
+        print("3. Nieuwe mapstructuur toevoegen")
+        print("4. Mapstructuur verwijderen")
+        print("5. Configuratie opslaan en afsluiten")
+        print("6. Afsluiten zonder opslaan")
+        
+        choice = input("\nKies een optie (1-6): ").strip()
+        
+        if choice == "1":
+            edit_school_year_dates(config)
+        elif choice == "2":
+            edit_folder_structures(config)
+        elif choice == "3":
+            add_new_folder_type(config)
+        elif choice == "4":
+            remove_folder_type(config)
+        elif choice == "5":
+            save_config(config)
+            print("✓ Configuratie opgeslagen!")
+            break
+        elif choice == "6":
+            print("Configuratie niet opgeslagen.")
+            break
+        else:
+            print("Ongeldige keuze.")
+        print()
+
+def edit_school_year_dates(config):
+    """Bewerk schooljaar datums"""
+    print("\nHuidige schooljaar datums:")
+    print(f"Start: {config['school_year_start_day']}/{config['school_year_start_month']}")
+    print(f"Eind: {config['school_year_end_day']}/{config['school_year_end_month']}")
+    
+    if input("\nWil je deze wijzigen? (j/n): ").lower() == 'j':
+        try:
+            config['school_year_start_month'] = int(input("Start maand (1-12): "))
+            config['school_year_start_day'] = int(input("Start dag (1-31): "))
+            config['school_year_end_month'] = int(input("Eind maand (1-12): "))
+            config['school_year_end_day'] = int(input("Eind dag (1-31): "))
+            print("✓ Schooljaar datums bijgewerkt!")
+        except ValueError:
+            print("✗ Ongeldige invoer, wijzigingen niet opgeslagen.")
+
+def edit_folder_structures(config):
+    """Bewerk bestaande mapstructuren"""
+    folder_types = config["folder_types"]
+    
+    print("\nBeschikbare mapstructuren:")
+    for i, (key, folders) in enumerate(folder_types.items(), 1):
+        print(f"{i}. {key}")
+        if folders:
+            print(f"   Submappen: {', '.join(folders)}")
+        else:
+            print("   Alleen hoofdmappen")
+    
+    try:
+        choice = int(input(f"\nWelke wil je bewerken (1-{len(folder_types)})? ")) - 1
+        if 0 <= choice < len(folder_types):
+            selected_key = list(folder_types.keys())[choice]
+            edit_single_folder_type(config, selected_key)
+        else:
+            print("Ongeldige keuze.")
+    except ValueError:
+        print("Voer een geldig nummer in.")
+
+def edit_single_folder_type(config, folder_key):
+    """Bewerk één mapstructuur"""
+    folders = config["folder_types"][folder_key]
+    
+    print(f"\nMapstructuur: {folder_key}")
+    if folders:
+        print("Huidige submappen:")
+        for i, folder in enumerate(folders, 1):
+            print(f"  {i}. {folder}")
+    else:
+        print("Geen submappen (alleen hoofdmappen)")
+    
+    print("\nOpties:")
+    print("1. Submap toevoegen")
+    print("2. Submap wijzigen")
+    print("3. Submap verwijderen")
+    print("4. Alle submappen wissen")
+    print("5. Terug")
+    
+    choice = input("\nKies een optie (1-5): ").strip()
+    
+    if choice == "1":
+        new_folder = input("Naam van nieuwe submap: ").strip()
+        if new_folder:
+            folders.append(new_folder)
+            print(f"✓ Submap '{new_folder}' toegevoegd!")
+    
+    elif choice == "2" and folders:
+        try:
+            idx = int(input(f"Welke submap wijzigen (1-{len(folders)})? ")) - 1
+            if 0 <= idx < len(folders):
+                old_name = folders[idx]
+                new_name = input(f"Nieuwe naam voor '{old_name}': ").strip()
+                if new_name:
+                    folders[idx] = new_name
+                    print(f"✓ Submap gewijzigd van '{old_name}' naar '{new_name}'!")
+        except (ValueError, IndexError):
+            print("Ongeldige keuze.")
+    
+    elif choice == "3" and folders:
+        try:
+            idx = int(input(f"Welke submap verwijderen (1-{len(folders)})? ")) - 1
+            if 0 <= idx < len(folders):
+                removed = folders.pop(idx)
+                print(f"✓ Submap '{removed}' verwijderd!")
+        except (ValueError, IndexError):
+            print("Ongeldige keuze.")
+    
+    elif choice == "4":
+        if input("Alle submappen wissen? (j/n): ").lower() == 'j':
+            folders.clear()
+            print("✓ Alle submappen gewist!")
+
+def add_new_folder_type(config):
+    """Voeg nieuwe mapstructuur toe"""
+    folder_types = config["folder_types"]
+    
+    new_key = input("\nNaam voor nieuwe mapstructuur: ").strip()
+    if not new_key:
+        print("Geen naam ingevoerd.")
+        return
+    
+    if new_key in folder_types:
+        print(f"Mapstructuur '{new_key}' bestaat al!")
+        return
+    
+    print(f"\nSubmappen voor '{new_key}' (druk Enter zonder tekst om te stoppen):")
+    subfolders = []
+    while True:
+        subfolder = input(f"Submap {len(subfolders) + 1}: ").strip()
+        if not subfolder:
+            break
+        subfolders.append(subfolder)
+    
+    folder_types[new_key] = subfolders
+    print(f"✓ Mapstructuur '{new_key}' toegevoegd met {len(subfolders)} submappen!")
+
+def remove_folder_type(config):
+    """Verwijder mapstructuur"""
+    folder_types = config["folder_types"]
+    
+    if len(folder_types) <= 1:
+        print("Kan niet alle mapstructuren verwijderen!")
+        return
+    
+    print("\nBeschikbare mapstructuren:")
+    for i, key in enumerate(folder_types.keys(), 1):
+        print(f"{i}. {key}")
+    
+    try:
+        choice = int(input(f"\nWelke verwijderen (1-{len(folder_types)})? ")) - 1
+        if 0 <= choice < len(folder_types):
+            key_to_remove = list(folder_types.keys())[choice]
+            if input(f"'{key_to_remove}' verwijderen? (j/n): ").lower() == 'j':
+                del folder_types[key_to_remove]
+                print(f"✓ Mapstructuur '{key_to_remove}' verwijderd!")
+        else:
+            print("Ongeldige keuze.")
+    except ValueError:
+        print("Voer een geldig nummer in.")
 
 if __name__ == "__main__":
     main()
