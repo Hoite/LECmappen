@@ -171,6 +171,52 @@ def interactive_mode():
         except ValueError:
             print("Voer een geldig nummer in.")
     
+    # Doelmap selectie
+    print("\nDoelmap selectie:")
+    print("Waar wil je de mappen aanmaken?")
+    print("1. Huidige map (.)")
+    print("2. Nieuwe submap maken")
+    print("3. Bestaande map kiezen")
+    print("4. Volledig pad opgeven")
+    
+    while True:
+        try:
+            choice = input("\nKies een optie (1-4): ").strip()
+            if choice == "1":
+                output_dir = "."
+                break
+            elif choice == "2":
+                submap_name = input("Naam van nieuwe submap: ").strip()
+                if submap_name:
+                    output_dir = submap_name
+                    break
+                else:
+                    print("Voer een geldige mapnaam in.")
+            elif choice == "3":
+                output_dir = choose_existing_directory()
+                if output_dir:
+                    break
+            elif choice == "4":
+                custom_path = input("Volledig pad: ").strip()
+                if custom_path:
+                    output_dir = custom_path
+                    break
+                else:
+                    print("Voer een geldig pad in.")
+            else:
+                print("Kies 1, 2, 3 of 4.")
+        except ValueError:
+            print("Voer een geldige keuze in.")
+    
+    # Controleer of output directory bestaat, maak aan indien nodig
+    output_path = Path(output_dir)
+    try:
+        output_path.mkdir(parents=True, exist_ok=True)
+        print(f"✓ Doelmap: {output_path.absolute()}")
+    except Exception as e:
+        print(f"✗ Kon doelmap niet aanmaken: {e}")
+        return
+    
     # Bevestiging
     start_date, end_date = get_school_year(year)
     mondays = get_mondays_in_range(start_date, end_date)
@@ -192,7 +238,7 @@ def interactive_mode():
     success_count = 0
     
     for monday in mondays:
-        if create_folder_structure(".", monday, selected_folders):
+        if create_folder_structure(output_dir, monday, selected_folders):
             success_count += 1
     
     print(f"\n✓ Klaar! {success_count}/{len(mondays)} mappen succesvol aangemaakt.")
@@ -207,6 +253,7 @@ def main():
     parser.add_argument("--year", type=int, help="Startjaar van het schooljaar (bijv. 2024 voor schooljaar 2024/2025)")
     parser.add_argument("--type", choices=available_types, 
                        help="Type mapstructuur")
+    parser.add_argument("--output", "-o", type=str, help="Doelmap waar de mappen worden aangemaakt (standaard: huidige map)")
     parser.add_argument("--config", action="store_true", help="Configuratie bestand aanmaken/bewerken")
     parser.add_argument("--edit-config", action="store_true", help="Interactieve configuratie editor")
     parser.add_argument("--interactive", "-i", action="store_true", help="Interactieve modus (aanbevolen)")
@@ -231,16 +278,22 @@ def main():
     config = load_config()
     year = args.year or datetime.now().year
     folder_type = args.type or list(config["folder_types"].keys())[0]  # Gebruik eerste beschikbare type
+    output_dir = args.output or "."
+    
+    # Controleer of output directory bestaat, maak aan indien nodig
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
     
     start_date, end_date = get_school_year(year)
     mondays = get_mondays_in_range(start_date, end_date)
     subfolders = config["folder_types"][folder_type]
     
     print(f"Mappen aanmaken voor schooljaar {year}/{year+1} ({folder_type})")
+    print(f"Doelmap: {output_path.absolute()}")
     success_count = 0
     
     for monday in mondays:
-        if create_folder_structure(".", monday, subfolders):
+        if create_folder_structure(output_dir, monday, subfolders):
             success_count += 1
     
     print(f"✓ {success_count}/{len(mondays)} mappen aangemaakt.")
@@ -420,6 +473,47 @@ def remove_folder_type(config):
             print("Ongeldige keuze.")
     except ValueError:
         print("Voer een geldig nummer in.")
+
+def choose_existing_directory():
+    """Laat gebruiker een bestaande directory kiezen"""
+    current_dir = Path(".")
+    
+    while True:
+        print(f"\nHuidige locatie: {current_dir.absolute()}")
+        
+        # Toon beschikbare directories
+        directories = [d for d in current_dir.iterdir() if d.is_dir() and not d.name.startswith('.')]
+        
+        if directories:
+            print("Beschikbare mappen:")
+            for i, directory in enumerate(directories, 1):
+                print(f"  {i}. {directory.name}")
+        else:
+            print("Geen submappen gevonden.")
+        
+        print("\nOpties:")
+        print("  0. Huidige map gebruiken")
+        if current_dir.parent != current_dir:  # Niet root directory
+            print("  .. Terug naar bovenliggende map")
+        print("  q. Annuleren")
+        
+        choice = input("\nKies een optie: ").strip()
+        
+        if choice == "0":
+            return str(current_dir)
+        elif choice.lower() == "q":
+            return None
+        elif choice == ".." and current_dir.parent != current_dir:
+            current_dir = current_dir.parent
+        else:
+            try:
+                idx = int(choice) - 1
+                if 0 <= idx < len(directories):
+                    current_dir = directories[idx]
+                else:
+                    print("Ongeldige keuze.")
+            except ValueError:
+                print("Voer een geldig nummer in.")
 
 if __name__ == "__main__":
     main()

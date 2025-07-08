@@ -45,15 +45,41 @@ python3 lec_mappen.py --interactive
 
 **Command line modus:**
 ```bash
-# Mappen voor volgend schooljaar (2025/2026)
-python3 lec_mappen.py --year 2025 --type basic
+# Mappen voor volgend schooljaar (2025/2026) in huidige map
+python3 lec_mappen.py --year 2025 --type "Aanvragen Studenten"
 
-# Mappen voor huidig schooljaar (2024/2025)
-python3 lec_mappen.py --year 2024 --type aanvragenstudenten
+# Mappen aanmaken in specifieke submap
+python3 lec_mappen.py --year 2025 --type "LEC Vergaderingen" --output "LEC_2025-2026"
+
+# Mappen aanmaken in bestaande map met volledig pad
+python3 lec_mappen.py --year 2024 --type "Diplomabesluiten" --output "/Users/naam/Documents/LEC"
 
 # Alle opties bekijken
 python3 lec_mappen.py --help
 ```
+
+## Doelmap kiezen
+
+Je kunt kiezen waar de mappen worden aangemaakt:
+
+### Command line:
+```bash
+# In huidige map (standaard)
+python3 lec_mappen.py --type "LEC Vergaderingen"
+
+# In nieuwe submap
+python3 lec_mappen.py --type "LEC Vergaderingen" --output "LEC_Vergaderingen_2025"
+
+# In bestaande map
+python3 lec_mappen.py --type "Aanvragen Studenten" --output "/pad/naar/gewenste/map"
+```
+
+### Interactieve modus:
+- Keuze uit 4 opties:
+  1. **Huidige map** - Mappen worden hier aangemaakt
+  2. **Nieuwe submap** - Geef naam op, wordt automatisch aangemaakt
+  3. **Bestaande map** - Navigeer door mappenstructuur
+  4. **Volledig pad** - Typ het exacte pad in
 
 ## Schooljaar notatie
 
