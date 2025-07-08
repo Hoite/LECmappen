@@ -7,6 +7,7 @@ Universeel Python script voor het aanmaken van mappen en submappen per week voor
 - ✅ **Automatische schooljaar detectie**: Geen handmatige datums aanpassen
 - ✅ **Interactieve modus**: Gebruiksvriendelijke interface
 - ✅ **Configureerbaar**: Eenvoudig aanpassen via config.json
+- ✅ **Doelmap selectie**: Kies waar mappen worden aangemaakt
 - ✅ **Meerdere maptypes**: Verschillende structuren voor verschillende doeleinden
 
 ## Vereisten
@@ -100,21 +101,30 @@ Het bestand `config.json` bevat alle instellingen en je kunt dit eenvoudig aanpa
 ### Handmatig bewerken:
 ```json
 {
-  "school_year_start_month": 9,     // September
-  "school_year_start_day": 1,       // 1e dag van de maand
-  "school_year_end_month": 7,       // Juli
-  "school_year_end_day": 31,        // Laatste dag van de maand
-  "meeting_day": 0,                 // 0=Maandag, 1=Dinsdag, etc.
+  "school_year_start_month": 9,
+  "school_year_start_day": 1,
+  "school_year_end_month": 7,
+  "school_year_end_day": 31,
+  "meeting_day": 0,
   "folder_types": {
-    "basic": [],                    // Alleen hoofdmappen
-    "aanvragenstudenten": [         // Met submappen
+    "LEC Vergaderingen": [],
+    "Aanvragen Studenten": [
       "Aangepaste examinering",
       "Extra herkansing",
       "Hoger niveau", 
       "Vrijstelling"
     ],
-    "diplomabesluiten": [...],      // Met submappen
-    "vaststellingen": [...]         // Met submappen
+    "Diplomabesluiten": [
+      "Certificaten",
+      "Diploma's",
+      "Mbo-verklaringen"
+    ],
+    "Vaststellingen": [
+      "Diplomaplan keuzedelen",
+      "Diplomaplan kwalificaties",
+      "Exameninstrumenten",
+      "Resultaten"
+    ]
   }
 }
 ```
@@ -141,7 +151,7 @@ python3 lec_mappen.py --edit-config
 **Nieuwe mapstructuur maken:**
 ```json
 "folder_types": {
-  "examens": [
+  "Examens": [
     "Theoretische examens",
     "Praktische examens",
     "Herexamens"
@@ -152,14 +162,13 @@ python3 lec_mappen.py --edit-config
 **Bestaande submappen wijzigen:**
 - Pas de namen aan in `config.json`  
 - Of gebruik de interactieve editor
-```
 
 ## Beschikbare maptypes
 
-- **basic**: Alleen wekelijkse hoofdmappen (YYYY-MM-DD)
-- **aanvragenstudenten**: Met submappen voor aanvragen
-- **diplomabesluiten**: Met submappen voor diploma's en certificaten
-- **vaststellingen**: Met submappen voor vaststellingen
+- **LEC Vergaderingen**: Alleen wekelijkse hoofdmappen (YYYY-MM-DD)
+- **Aanvragen Studenten**: Met submappen voor studentaanvragen
+- **Diplomabesluiten**: Met submappen voor diploma's en certificaten
+- **Vaststellingen**: Met submappen voor vaststellingen
 
 ## Troubleshooting
 
@@ -194,12 +203,19 @@ Als je de oude Bash/PowerShell scripts gebruikt, kun je eenvoudig migreren:
 - ✅ Automatische schooljaar detectie
 - ✅ Betere foutafhandeling
 - ✅ Flexibele mapstructuren
+- ✅ Doelmap selectie
 
 ## Bijdragen
 
 Heb je suggesties of verbeteringen? Maak een issue of pull request aan op GitHub.
 
 ## Changelog
+
+### v2.1.0 (2025-07-08)
+- Doelmap functionaliteit toegevoegd
+- Interactieve configuratie editor
+- Nederlandse mapnamen met spaties ondersteuning
+- Verbeterde gebruikerservaring
 
 ### v2.0.0 (2025-07-08)
 - Volledig herschreven in Python voor cross-platform ondersteuning
@@ -216,6 +232,6 @@ Heb je suggesties of verbeteringen? Maak een issue of pull request aan op GitHub
 
 ```
 Auteur: Hoite Prins
-Versie: 2.0.0
+Versie: 2.1.0
 Licentie: MIT
 ```
